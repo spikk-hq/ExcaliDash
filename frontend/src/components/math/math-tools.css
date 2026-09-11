@@ -1,0 +1,83 @@
+.MathToolbar { display: flex; gap: 0.45rem; }
+.MathToolbar button {
+  align-items: center; background: var(--island-bg-color, #fff); border: 0;
+  border-radius: 0.5rem; box-shadow: 0 1px 4px rgb(0 0 0 / 15%);
+  color: var(--color-on-surface, #1b1b1f); cursor: pointer; display: flex;
+  font: inherit; font-weight: 600; gap: 0.45rem; height: 2.5rem;
+  padding: 0 0.8rem; transition: background-color 120ms ease,
+    color 120ms ease, transform 120ms ease;
+}
+.MathToolbar button:hover, .MathToolbar button[data-active="true"] {
+  background: var(--color-primary-light, #eeeaff);
+  color: var(--color-primary, #6965db);
+}
+.MathToolbar button:hover { transform: translateY(-1px); }
+.MathToolbar button:focus-visible {
+  outline: 2px solid var(--color-primary, #6965db); outline-offset: 2px;
+}
+.MathToolbar kbd {
+  color: var(--color-gray-60, #868e96); font-family: inherit;
+  font-size: 0.68rem; font-weight: 700;
+}
+.MathDialogBackdrop {
+  align-items: center; background: rgb(0 0 0 / 42%); display: flex;
+  inset: 0; justify-content: center; padding: 1.5rem; position: fixed;
+  z-index: 1000;
+}
+.MathDialogPanel {
+  background: #fff; border-radius: 1rem; box-shadow: 0 24px 70px rgb(0 0 0 / 28%);
+  color: #1b1b1f; max-height: calc(100vh - 3rem); max-width: 72rem;
+  overflow: auto; width: min(94vw, 72rem);
+}
+.dark .MathDialogPanel { background: #202024; color: #f1f3f5; }
+.MathDialogHeader {
+  align-items: center; border-bottom: 1px solid #dee2e6; display: flex;
+  justify-content: space-between; padding: 1.25rem 1.5rem;
+}
+.dark .MathDialogHeader { border-color: #3b3b42; }
+.MathDialogHeader h2 { font-size: 1.3rem; font-weight: 700; margin: 0; }
+.MathDialogHeader button {
+  background: transparent; border: 0; border-radius: 0.4rem; color: inherit;
+  cursor: pointer; font-size: 1.65rem; height: 2.25rem; line-height: 1;
+  width: 2.25rem;
+}
+.MathDialogHeader button:hover { background: rgb(128 128 128 / 16%); }
+.MathDialogBody { padding: 1.25rem 1.5rem 1.5rem; }
+.MathDialogButton {
+  align-items: center; background: transparent; border: 1px solid #ced4da;
+  border-radius: 0.65rem; color: inherit; cursor: pointer; display: flex;
+  font: inherit; font-weight: 600; gap: 0.45rem; justify-content: center;
+  min-height: 2.7rem; padding: 0.55rem 1rem;
+}
+.MathDialogButton.is-primary {
+  background: #6965db; border-color: #6965db; color: #fff;
+}
+.MathDialogButton:disabled { cursor: default; opacity: 0.5; }
+.MathEyebrow, .GraphAxes legend {
+  font-size: 0.78rem; font-weight: 700; letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+.MathHint {
+  color: #868e96; font-size: 0.82rem; line-height: 1.45;
+  margin: 0.3rem 0 0.75rem;
+}
+.MathError {
+  background: #fff0f0; border-radius: 0.5rem; color: #c92a2a;
+  font-size: 0.82rem; margin-top: 0.65rem; padding: 0.65rem 0.8rem;
+}
+.dark .MathError { background: #462020; color: #ffc9c9; }
+.MathFooter {
+  align-items: center; color: #868e96; display: flex; font-size: 0.78rem;
+  justify-content: space-between; margin-top: 0.85rem;
+}
+.MathActions { display: flex; gap: 0.6rem; }
+.EquationDraftOverlay {
+  inset: 0; overflow: hidden; pointer-events: none; position: absolute; z-index: 4;
+}
+.EquationDraftMask, .EquationDraftImage { position: absolute; }
+.EquationDraftImage { object-fit: fill; }
+@media (max-width: 780px) {
+  .MathToolbar span, .MathToolbar kbd { display: none; }
+  .MathFooter { align-items: stretch; flex-direction: column; gap: 0.75rem; }
+  .MathActions { justify-content: flex-end; }
+}

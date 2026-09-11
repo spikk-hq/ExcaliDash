@@ -89,6 +89,9 @@ pids
 coverage/
 *.lcov
 
+# Local web-research output
+.firecrawl/
+
 # Vitest cache
 .vitest/
 

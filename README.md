@@ -13,6 +13,7 @@ A self-hosted dashboard and organizer for [Excalidraw](https://github.com/excali
 ## Table of Contents
 
 - [Features](#features)
+- [This Fork](#this-fork)
 - [Upgrading](#upgrading)
 - [Installation](#installation)
   - [Quickstart](#quickstart)
@@ -93,6 +94,16 @@ Automatically retain recent drawing snapshots, preview past versions from the ed
 
 </details>
 
+## This Fork
+
+This fork adds editable function graphs and KaTeX equations to the drawing
+editor. Use `C` for Graph and `M` for Equation. Equation drafts appear to other
+editors in real time, but ExcaliDash stores an image only when the equation is
+inserted or updated.
+
+The `main` branch publishes frontend and backend images to GitHub Container
+Registry. For Dokploy setup, see [docs/DOKPLOY.md](docs/DOKPLOY.md).
+
 # Upgrading
 
 See [release notes](https://github.com/ZimengXiong/ExcaliDash/releases) for a specific release.
@@ -103,9 +114,9 @@ ExcaliDash includes an in-app update notifier that checks GitHub Releases. If yo
 UPDATE_CHECK_OUTBOUND=false
 ```
 
-## Docker Hub Upgrades
+## GHCR Image Upgrades
 
-If you deployed using `docker-compose.prod.yml` (Docker Hub images), upgrade by pulling the latest images and recreating containers:
+If you deployed this fork with `docker-compose.prod.yml`, upgrade by pulling the latest GHCR images and recreating containers:
 
 ```bash
 docker compose -f docker-compose.prod.yml pull && \
@@ -139,22 +150,24 @@ Notes:
 Prereqs: Docker + Docker Compose v2.
 
 <details>
-<summary>Docker Hub (Recommended)</summary>
+<summary>Dokploy with GHCR (Recommended for this fork)</summary>
 
-## Docker Hub (Recommended)
+## Dokploy with GHCR
 
 ```bash
 # Download docker-compose.prod.yml
-curl -OL https://raw.githubusercontent.com/ZimengXiong/ExcaliDash/main/docker-compose.prod.yml
+curl -OL https://raw.githubusercontent.com/spikk-hq/ExcaliDash/main/docker-compose.prod.yml
 
 # Pull images
 docker compose -f docker-compose.prod.yml pull
 
 # Run container
 docker compose -f docker-compose.prod.yml up -d
-
-# Access the frontend at localhost:6767
 ```
+
+The production Compose file does not bind an application port on the host.
+Attach your domain to the `frontend` service and container port `80` in
+Dokploy. See [the Dokploy guide](docs/DOKPLOY.md) for the required variables.
 
 For single-container deployments, `JWT_SECRET` can be omitted and will be auto-generated and persisted in the backend volume on first start. For portability and most production deployments, set a fixed `JWT_SECRET` explicitly.
 

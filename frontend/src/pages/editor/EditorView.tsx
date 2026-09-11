@@ -18,6 +18,7 @@ import {
 import { GridStepSelector } from "../../components/GridStepSelector";
 import type { UserIdentity } from "../../utils/identity";
 import { UIOptions } from "./shared";
+import { EquationIcon, GraphIcon } from "../../components/math/MathIcons";
 
 interface Peer extends UserIdentity {
   isActive: boolean;
@@ -50,6 +51,7 @@ type EditorViewProps = {
   onNavigateHome: () => void;
   onNewNameChange: (value: string) => void;
   onPointerUpdate: (payload: any) => void;
+  onMathPointerDown: (activeTool: any, pointerDownState: any) => void;
   onRenameBlur: () => void;
   onRenameStart: () => void;
   onRenameSubmit: (event: React.FormEvent) => void;
@@ -60,6 +62,10 @@ type EditorViewProps = {
   onShareOpen: () => void;
   onHistoryOpen: () => void;
   onToggleAutoHide: () => void;
+  mathOverlay: React.ReactNode;
+  renderMathToolbar?: (isMobile: boolean, appState: any) => React.ReactNode;
+  onGraphOpen: () => void;
+  onEquationSelect: () => void;
 };
 
 const UserAvatar = ({
@@ -114,6 +120,7 @@ export const EditorView: React.FC<EditorViewProps> = ({
   onNavigateHome,
   onNewNameChange,
   onPointerUpdate,
+  onMathPointerDown,
   onRenameBlur,
   onRenameStart,
   onRenameSubmit,
@@ -124,6 +131,10 @@ export const EditorView: React.FC<EditorViewProps> = ({
   onShareOpen,
   onHistoryOpen,
   onToggleAutoHide,
+  mathOverlay,
+  renderMathToolbar,
+  onGraphOpen,
+  onEquationSelect,
 }) => (
   <div className="h-screen flex flex-col bg-white dark:bg-neutral-950 overflow-hidden">
     <header
@@ -268,10 +279,12 @@ export const EditorView: React.FC<EditorViewProps> = ({
           initialData={initialData}
           onChange={onCanvasChange}
           onPointerUpdate={onPointerUpdate}
+          onPointerDown={onMathPointerDown}
           onLibraryChange={onLibraryChange}
           excalidrawAPI={onSetExcalidrawAPI}
           UIOptions={UIOptions}
           viewModeEnabled={!canEdit}
+          renderTopRightUI={renderMathToolbar as any}
         >
           <MainMenu>
             <MainMenu.DefaultItems.ToggleTheme />
@@ -280,6 +293,25 @@ export const EditorView: React.FC<EditorViewProps> = ({
             <MainMenu.DefaultItems.ChangeCanvasBackground />
             <MainMenu.DefaultItems.Help />
             <MainMenu.Separator />
+            {canEdit ? (
+              <>
+                <MainMenu.Item
+                  icon={<GraphIcon />}
+                  shortcut="C"
+                  onSelect={onGraphOpen}
+                >
+                  Create or edit graph
+                </MainMenu.Item>
+                <MainMenu.Item
+                  icon={<EquationIcon />}
+                  shortcut="M"
+                  onSelect={onEquationSelect}
+                >
+                  Insert equation
+                </MainMenu.Item>
+                <MainMenu.Separator />
+              </>
+            ) : null}
             <MainMenu.ItemCustom>
               <GridStepSelector gridStep={gridStep} onChange={onSetGridStep} />
             </MainMenu.ItemCustom>
@@ -295,6 +327,7 @@ export const EditorView: React.FC<EditorViewProps> = ({
           </span>
         </div>
       )}
+      {mathOverlay}
       <Toaster position="bottom-center" />
     </div>
   </div>

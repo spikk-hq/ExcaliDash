@@ -1,6 +1,6 @@
 services:
   backend:
-    image: zimengxiong/excalidash-backend:latest
+    image: ghcr.io/spikk-hq/excalidash-backend:latest
     container_name: excalidash-backend
     # Run an init process (PID 1) that reaps zombies and forwards SIGTERM/SIGINT
     # to node so graceful shutdown (io.close / prisma.$disconnect) actually runs.
@@ -11,8 +11,20 @@ services:
       - PORT=8000
       - NODE_ENV=production
       - AUTH_MODE=${AUTH_MODE:-local}
+      - FRONTEND_URL=${FRONTEND_URL:-http://localhost:6767}
       # Keep disabled by default; only enable when a trusted proxy sanitizes forwarded headers.
-      - TRUST_PROXY=false
+      - TRUST_PROXY=${TRUST_PROXY:-false}
+      - ENFORCE_HTTPS_REDIRECT=${ENFORCE_HTTPS_REDIRECT:-true}
+      # Optional S3-compatible storage. Leave all of these unset to store
+      # drawing files in the SQLite-backed volume.
+      - S3_BUCKET=${S3_BUCKET:-}
+      - S3_REGION=${S3_REGION:-us-east-1}
+      - S3_ENDPOINT=${S3_ENDPOINT:-}
+      - S3_PUBLIC_URL=${S3_PUBLIC_URL:-}
+      - S3_FORCE_PATH_STYLE=${S3_FORCE_PATH_STYLE:-false}
+      - S3_KEY_PREFIX=${S3_KEY_PREFIX:-excalidash}
+      - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID:-}
+      - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY:-}
       # Optional for single-instance deployments:
       # if unset, backend auto-generates and persists one in the volume.
       # Recommended to set explicitly for portability and multi-instance setups.
@@ -51,10 +63,10 @@ services:
       retries: 3
 
   frontend:
-    image: zimengxiong/excalidash-frontend:latest
+    image: ghcr.io/spikk-hq/excalidash-frontend:latest
     container_name: excalidash-frontend
-    ports:
-      - "6767:80"
+    expose:
+      - "80"
     depends_on:
       - backend
     networks:

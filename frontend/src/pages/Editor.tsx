@@ -23,6 +23,7 @@ import { useEditorFileUploads } from "./editor/useEditorFileUploads";
 import { useEditorSceneApi } from "./editor/useEditorSceneApi";
 import { useEditorGridStep } from "./editor/useEditorGridStep";
 import { DEFAULT_GRID_STEP } from "../components/GridStepSelector";
+import { useMathTools } from "../components/math/useMathTools";
 
 export const Editor: React.FC = () => {
   return <ExcalidrawEditor />;
@@ -130,6 +131,14 @@ const ExcalidrawEditor: React.FC = () => {
       recordElementVersion,
       onAccessDenied: handleSocketAccessDenied,
     });
+  const mathTools = useMathTools({
+    canEdit,
+    drawingId: id,
+    editorContainerRef,
+    excalidrawAPIRef: excalidrawAPI,
+    isReady,
+    socketRef,
+  });
   const { scanNow: scanFileUploads } = useEditorFileUploads({
     drawingId: id,
     isReady,
@@ -347,6 +356,7 @@ const ExcalidrawEditor: React.FC = () => {
         onNavigateHome={() => navigate("/")}
         onNewNameChange={setNewName}
         onPointerUpdate={onPointerUpdate}
+        onMathPointerDown={mathTools.onPointerDown}
         onRenameBlur={() => setIsRenaming(false)}
         onRenameStart={handleRenameStart}
         onRenameSubmit={handleRenameSubmit}
@@ -357,7 +367,12 @@ const ExcalidrawEditor: React.FC = () => {
         onShareOpen={() => setIsShareOpen(true)}
         onHistoryOpen={() => setIsHistoryOpen(true)}
         onToggleAutoHide={handleToggleAutoHide}
+        mathOverlay={mathTools.overlayNode}
+        renderMathToolbar={mathTools.renderTopRightUI}
+        onGraphOpen={mathTools.openGraph}
+        onEquationSelect={mathTools.activateEquation}
       />
+      {mathTools.dialogNode}
       <EditorDialogs
         drawingId={id}
         drawingName={drawingName}

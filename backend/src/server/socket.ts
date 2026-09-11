@@ -16,6 +16,7 @@ import {
   type RevalidatableSocket,
   type SocketState,
 } from "./socketAccess";
+import { parseEquationDraftUpdate } from "./equationDraft";
 
 type RegisterSocketHandlersDeps = {
   io: Server;
@@ -326,7 +327,18 @@ export const registerSocketHandlers = ({
       const roomId = `drawing_${drawingId}`;
       socket.to(roomId).emit("element-update", data);
     });
-
+    socket.on("equation-draft", async (data) => {
+      const drawingId = typeof data?.drawingId === "string" ? data.drawingId : null;
+      if (!drawingId || !state.access.has(drawingId)) return;
+      const access = await getCachedOrFreshAccess(drawingId);
+      if (!access) { dropDrawingAccess(drawingId); return; }
+      if (!canEditDrawing(access)) return;
+      const update = parseEquationDraftUpdate(data);
+      if (!update) return;
+      socket.volatile.to(`drawing_${drawingId}`).emit("equation-draft", {
+        ...update, senderId: socket.id,
+      });
+    });
     socket.on(
       "user-activity",
       async ({ drawingId, isActive }: { drawingId: string; isActive: boolean }) => {
@@ -352,6 +364,9 @@ export const registerSocketHandlers = ({
     );
 
     socket.on("disconnect", () => {
+      for (const roomId of state.joinedRooms) {
+        socket.to(roomId).emit("equation-draft-sender-left", { senderId: socket.id });
+      }
       // Only scan the rooms this socket actually joined instead of every room.
       const changed = removeSocketFromRooms(roomUsers, [...state.joinedRooms], socket.id);
       for (const roomId of changed) {
