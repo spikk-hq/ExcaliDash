@@ -14,7 +14,9 @@ services:
       - FRONTEND_URL=${FRONTEND_URL:-http://localhost:6767}
       # Keep disabled by default; only enable when a trusted proxy sanitizes forwarded headers.
       - TRUST_PROXY=${TRUST_PROXY:-false}
-      - ENFORCE_HTTPS_REDIRECT=${ENFORCE_HTTPS_REDIRECT:-true}
+      # Dokploy Traefik terminates TLS. Redirects here would also redirect the
+      # private container health check.
+      - ENFORCE_HTTPS_REDIRECT=${ENFORCE_HTTPS_REDIRECT:-false}
       # Optional S3-compatible storage. Leave all of these unset to store
       # drawing files in the SQLite-backed volume.
       - S3_BUCKET=${S3_BUCKET:-}
@@ -47,7 +49,11 @@ services:
       # Persist scheduled backups outside the container (pairs with BACKUP_DIR).
       # - backup-data:/app/backups
     networks:
-      - excalidash-network
+      excalidash-network:
+        aliases:
+          # A unique name prevents conflicts with other Dokploy services that
+          # use the common `backend` service name.
+          - excalidash-api
     restart: unless-stopped
     healthcheck:
       # Use IPv4 loopback explicitly to avoid IPv6 localhost resolution issues.
@@ -65,6 +71,8 @@ services:
   frontend:
     image: ghcr.io/spikk-hq/excalidash-frontend:latest
     container_name: excalidash-frontend
+    environment:
+      - BACKEND_URL=${BACKEND_URL:-excalidash-api:8000}
     expose:
       - "80"
     depends_on:
